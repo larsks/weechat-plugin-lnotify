@@ -2,4 +2,4 @@ This is a fork of the [lnotify][] plugin for weechat. It works correctly under b
 
 [lnotify]: https://github.com/weechat/scripts/blob/master/python/lnotify.py
 
-To run the tests, use the `pytest` command.
+To run the tests, use the `tox` command.

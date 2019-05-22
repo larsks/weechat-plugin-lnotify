@@ -52,11 +52,12 @@ lnotify_version = "0.3.4"
 lnotify_license = "GPL3"
 
 # convenient table checking for bools
-true = { "on": True, "off": False }
+true = {"on": True, "off": False}
 
 # declare this here, will be global config() object
 # but is initialized in __main__
 cfg = None
+
 
 class config(object):
     def __init__(self):
@@ -84,10 +85,13 @@ class config(object):
     def __getitem__(self, key):
         return self.opts[key]
 
+
 def printc(msg):
     weechat.prnt("", msg)
 
-def handle_msg(data, pbuffer, date, tags, displayed, highlight, prefix, message):
+
+def handle_msg(data, pbuffer, date, tags, displayed, highlight, prefix,
+               message):
     highlight = bool(highlight) and cfg["highlight"]
     query = true[cfg["query"]]
     notify_away = true[cfg["notify_away"]]
@@ -97,9 +101,10 @@ def handle_msg(data, pbuffer, date, tags, displayed, highlight, prefix, message)
     window_name = ""
     my_nickname = "nick_" + weechat.buffer_get_string(pbuffer, "localvar_nick")
 
-    # Check if active window is in the ignore_windows_list and skip notification
+    # Check if active window is in the ignore_windows_list and skip
+    # notification
     if (environ.get('DISPLAY') is not None) and path.isfile("/bin/xdotool"):
-        cmd_name="xdotool getactivewindow getwindowname".split()
+        cmd_name = "xdotool getactivewindow getwindowname".split()
         window_name = subprocess.check_output(cmd_name)
         ignore_windows_list = ["tilda", "gnome-terminal", "xterm"]
         if window_name in ignore_windows_list:
@@ -117,13 +122,13 @@ def handle_msg(data, pbuffer, date, tags, displayed, highlight, prefix, message)
 
     buffer_name = weechat.buffer_get_string(pbuffer, "short_name")
 
-
     if buffer_type == "private" and query:
         notify_user(buffer_name, message)
     elif buffer_type == "channel" and highlight:
         notify_user("{} @ {}".format(prefix, buffer_name), message)
 
     return weechat.WEECHAT_RC_OK
+
 
 def process_cb(data, command, return_code, out, err):
     if return_code == weechat.WEECHAT_HOOK_PROCESS_ERROR:
@@ -133,18 +138,22 @@ def process_cb(data, command, return_code, out, err):
         weechat.prnt("", "notify-send has an error")
     return weechat.WEECHAT_RC_OK
 
+
 def notify_user(origin, message):
-    hook = weechat.hook_process_hashtable("notify-send",
-        { "arg1": "-i", "arg2": cfg["icon"],
-          "arg3": "-a", "arg4": "WeeChat",
-          "arg5": origin, "arg6": message },
+    weechat.hook_process_hashtable(
+        "notify-send",
+        {"arg1": "-i", "arg2": cfg["icon"],
+         "arg3": "-a", "arg4": "WeeChat",
+         "arg5": origin, "arg6": message},
         20000, "process_cb", "")
 
     return weechat.WEECHAT_RC_OK
 
+
 # execute initializations in order
 if __name__ == "__main__":
-    weechat.register(lnotify_name, "kevr", lnotify_version, lnotify_license,
+    weechat.register(
+        lnotify_name, "kevr", lnotify_version, lnotify_license,
         "{} - A libnotify script for weechat".format(lnotify_name), "", "")
 
     cfg = config()

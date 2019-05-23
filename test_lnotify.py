@@ -66,10 +66,12 @@ def setup_module():
     lnotify.cfg = lnotify.config()
 
 
+@mock.patch('subprocess.check_output', return_value='dummy')
 @mock.patch('weechat.hook_process_hashtable')
 @mock.patch('weechat.buffer_get_string')
 def test_handle_msg_public_highlight(mock_buffer_get_string,
-                                     mock_hook_process_hashtable):
+                                     mock_hook_process_hashtable,
+                                     mock_check_output):
     mock_buffer_get_string.side_effect = fake_get_string()
     lnotify.handle_msg('', 0, '', '',  [], True, '(prefix)', 'this is a test')
 
@@ -81,20 +83,24 @@ def test_handle_msg_public_highlight(mock_buffer_get_string,
         20000, 'process_cb', '')
 
 
+@mock.patch('subprocess.check_output', return_value='dummy')
 @mock.patch('weechat.hook_process_hashtable')
 @mock.patch('weechat.buffer_get_string')
 def test_handle_msg_public_nohighlight(mock_buffer_get_string,
-                                       mock_hook_process_hashtable):
+                                       mock_hook_process_hashtable,
+                                       mock_check_output):
     mock_buffer_get_string.side_effect = fake_get_string()
     lnotify.handle_msg('', 0, '', '',  [], False, '(prefix)', 'this is a test')
 
     mock_hook_process_hashtable.assert_not_called()
 
 
+@mock.patch('subprocess.check_output', return_value='dummy')
 @mock.patch('weechat.hook_process_hashtable')
 @mock.patch('weechat.buffer_get_string')
 def test_handle_msg_private(mock_buffer_get_string,
-                            mock_hook_process_hashtable):
+                            mock_hook_process_hashtable,
+                            mock_check_output):
     mock_buffer_get_string.side_effect = fake_get_string(
         localvar_type='private')
     lnotify.handle_msg('', 0, '', '',  [], True, '(prefix)', 'this is a test')
@@ -107,10 +113,12 @@ def test_handle_msg_private(mock_buffer_get_string,
         20000, 'process_cb', '')
 
 
+@mock.patch('subprocess.check_output', return_value='dummy')
 @mock.patch('weechat.hook_process_hashtable')
 @mock.patch('weechat.buffer_get_string')
 def test_handle_msg_away(mock_buffer_get_string,
-                         mock_hook_process_hashtable):
+                         mock_hook_process_hashtable,
+                         mock_check_output):
     mock_buffer_get_string.side_effect = fake_get_string(localvar_away=True)
 
     lnotify.handle_msg('', 0, '', '',  [], True, '(prefix)', 'this is a test')
@@ -118,10 +126,12 @@ def test_handle_msg_away(mock_buffer_get_string,
     mock_hook_process_hashtable.assert_not_called()
 
 
+@mock.patch('subprocess.check_output', return_value='dummy')
 @mock.patch('weechat.hook_process_hashtable')
 @mock.patch('weechat.buffer_get_string')
 def test_handle_msg_tags(mock_buffer_get_string,
-                         mock_hook_process_hashtable):
+                         mock_hook_process_hashtable,
+                         mock_check_output):
     mock_buffer_get_string.side_effect = fake_get_string()
 
     lnotify.handle_msg('', 0, '', 'nick_testuser', [], True, '(prefix)',
@@ -130,7 +140,7 @@ def test_handle_msg_tags(mock_buffer_get_string,
     mock_hook_process_hashtable.assert_not_called()
 
 
-@mock.patch('subprocess.check_output')
+@mock.patch('subprocess.check_output', return_value='xterm')
 @mock.patch('lnotify.environ')
 @mock.patch('weechat.hook_process_hashtable')
 @mock.patch('weechat.buffer_get_string')
@@ -140,7 +150,6 @@ def test_handle_msg_ignore_window(mock_buffer_get_string,
                                   mock_check_output):
     mock_buffer_get_string.side_effect = fake_get_string()
     mock_environ.get.return_value = ':0'
-    mock_check_output.return_value = 'xterm'
 
     lnotify.handle_msg('', 0, '', '', [], True, '(prefix)',
                        'this is a test')

@@ -44,8 +44,6 @@
 # Fix undefined ignore_windows_list.
 
 import weechat
-import subprocess
-from os import environ, path
 
 lnotify_name = "lnotify"
 lnotify_version = "0.3.4"
@@ -98,18 +96,7 @@ def handle_msg(data, pbuffer, date, tags, displayed, highlight, prefix,
     buffer_type = weechat.buffer_get_string(pbuffer, "localvar_type")
     away = weechat.buffer_get_string(pbuffer, "localvar_away")
     x_focus = False
-    window_name = ""
     my_nickname = "nick_" + weechat.buffer_get_string(pbuffer, "localvar_nick")
-
-    # Check if active window is in the ignore_windows_list and skip
-    # notification
-    if (environ.get('DISPLAY') is not None) and path.isfile("/bin/xdotool"):
-        cmd_name = "xdotool getactivewindow getwindowname".split()
-        window_name = subprocess.check_output(cmd_name)
-        ignore_windows_list = ["tilda", "gnome-terminal", "xterm"]
-        if window_name in ignore_windows_list:
-            x_focus = True
-            return weechat.WEECHAT_RC_OK
 
     if pbuffer == weechat.current_buffer() and x_focus:
         return weechat.WEECHAT_RC_OK
